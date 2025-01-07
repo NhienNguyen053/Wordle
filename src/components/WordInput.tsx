@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import Modal from './Modal';
 
-function WordInput({ setDone, inputLetter, setInputLetter, setIsVisible }) {
+function WordInput({ index, setDone, inputLetter, setInputLetter, setModalText, setShake }) {
     const [letters, setLetters] = useState(['', '', '', '', '']);
     const [lettersStatus, setLettersStatus] = useState(['', '', '', '', '']);
     const [correctWord, setCorrectWord] = useState(['D', 'R', 'A', 'K', 'E']);
+    const [animate, setAnimate] = useState(false);
     
     useEffect(() => {
         const wordle = async() => {
@@ -19,7 +20,7 @@ function WordInput({ setDone, inputLetter, setInputLetter, setIsVisible }) {
                         return newLetters;
                     });
                 }
-                if (inputLetter === 'Backspace') {
+                if (inputLetter === 'Backspace' || inputLetter === 'BACKSPACE') {
                     setLetters((prevLetters) => {
                         const newLetters = [...prevLetters];
                         const lastFilledIndex = newLetters.findLastIndex((letter) => letter !== '');
@@ -29,32 +30,22 @@ function WordInput({ setDone, inputLetter, setInputLetter, setIsVisible }) {
                         return newLetters;
                     });
                 }
-                if (inputLetter === 'Enter') {
+                if (inputLetter === 'Enter' || inputLetter === 'ENTER') {
                     if (letters.some((letter) => letter === '')) {
-                        setIsVisible("Not enough letters");
+                        setModalText("Not enough letters");
+                        setShake(index);
                     } else {
-                        // should have check if word is valid here but
-                        const status = [...lettersStatus];
-                        letters.map((letter, index) => {
-                            if (letter === correctWord[index]) {
-                                status[index] = 'green';
-                            } else {
-                                const exist = correctWord.map((word, index2) => {
-                                    if (letter === word[index2]) {
-                                        status[index] = 'yellow';
-                                        return true;
-                                    } else {
-                                        if (index2 === (correctWord.length - 1)) {
-                                            return false;
-                                        }
-                                    }
-                                });
-                                const hasExist = exist.some((item) => item === true);
-                                if (!hasExist) {
-                                    status[index] = 'gray';
-                                }
-                            } 
+                        const newStatus = letters.map((letter, idx) => {
+                            if (letter === correctWord[idx]) {
+                                return '#538d4e';
+                            }
+                            if (correctWord.includes(letter)) {
+                                return '#b59f3b';
+                            }
+                            return '#3a3a3c';
                         });
+                        setLettersStatus(newStatus);
+                        setAnimate(true);
                         setDone(letters.join(''));
                     }
                 }
@@ -64,11 +55,10 @@ function WordInput({ setDone, inputLetter, setInputLetter, setIsVisible }) {
         wordle();
     }, [inputLetter]);
 
-
     return (
         <>
             {letters.map((letter, index) => (
-                <div key={index} className={`box ${letter ? 'active' : ''}`}>{letter}</div>
+                <div key={index} className={`box ${letter ? 'active' : ''} ${animate ? 'flip2' : ''}`} style={{ animationDelay: `${index * 0.3}s` }}>{letter}</div>
             ))}
         </>
     );
