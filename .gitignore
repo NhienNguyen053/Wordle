@@ -16,6 +16,7 @@ mono_crash.*
 [Oo]bj/
 [Dd]ebug/
 [Rr]elease/
+[Bb]uild/
 x64/
 x86/
 [Aa][Rr][Mm]/
