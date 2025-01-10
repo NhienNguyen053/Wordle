@@ -81,6 +81,7 @@ StyleCopReport.xml
 
 # Node.js modules
 node_modules/
+dist/
 npm-debug.log
 
 # Npm package
@@ -94,3 +95,4 @@ yarn-debug.log
 # Environment
 .env
 package-lock.json
+*.tsbuildinfo

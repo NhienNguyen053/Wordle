@@ -23,7 +23,7 @@ function WordInput({ word, index, setDone, inputLetter, setInputLetter, setModal
                 });
                 setLettersStatus(newStatus);
                 setAnimate(true);
-                setDone(letters.join(''));
+                setDone(word, newStatus);
             }
             wordSetRef.current = true;
         }

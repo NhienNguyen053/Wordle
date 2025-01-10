@@ -70,27 +70,34 @@ function App() {
     const updateStatistics = (win: boolean) => {
         const savedData = localStorage.getItem('gameData');
         const gameData = savedData ? JSON.parse(savedData) : null;
+    
         const totalWins = gameData?.wins.reduce((sum: any, win: any) => sum + win, 0) || 0;
+        const updatedWins = [...(gameData?.wins || [])];
+    
+        if (win && activeWordIndex >= 0 && activeWordIndex < updatedWins.length) {
+            updatedWins[activeWordIndex] = (updatedWins[activeWordIndex] || 0) + 1;
+        }
+    
         const newStatistics = {
             gamesPlayed: (gameData?.gamesPlayed || 0) + 1,
             winRate: Math.round(((totalWins + (win ? 1 : 0)) / ((gameData?.gamesPlayed || 0) + 1)) * 100),
             streak: win ? (gameData?.streak || 0) + 1 : 0,
             bestStreak: Math.max(gameData?.bestStreak || 0, win ? (gameData?.streak || 0) + 1 : 0),
             guesses: [...words],
-            wins: win ? (gameData?.wins[activeWordIndex] || 0) + 1 : gameData?.wins || [],
+            wins: updatedWins,
             isDone: true,
             word: encryptData(correctWord.join('')),
         };
+    
         localStorage.setItem('gameData', JSON.stringify(newStatistics));
         setStatistics(newStatistics);
     };
-
+    
     const updateWord = (value: string, index: number, status: string[]) => {
         setIsAnimating(true);
         const newWords = [...words];
         newWords[index] = value;
         setWords(newWords);
-
         const updatedLayout = [...keyboardLayout];
         for (let i = 0; i < value.length; i++) {
             const letter = value[i];
@@ -122,7 +129,7 @@ function App() {
             setTimeout(() => { setIsDone(true) }, 2000);
         }
 
-        setTimeout(() => setIsAnimating(false), 0);
+        setTimeout(() => setIsAnimating(false), 2000);
     };
 
     const playAgain = () => {
@@ -136,6 +143,14 @@ function App() {
         setReset(true);
         setTimeout(() => { setReset(false) }, 2000);
         setIsDone(false);
+        setKeyboardLayout((prevLayout) =>
+            prevLayout.map(row =>
+                row.map(key => ({
+                    ...key,
+                    color: '#818384',
+                }))
+            )
+        );
         if (savedData) {
             const gameData = JSON.parse(savedData);
             gameData.isDone = false;
