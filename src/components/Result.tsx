@@ -14,7 +14,7 @@ function Result({ isVisible, gameData, playAgain }) {
     }
 
     return (
-        <div>
+        <div style={{ pointerEvents: visible ? 'auto' : 'none' }}>
             <div className={`overlay ${visible ? 'visible' : ''}`}></div>            
             <div className={`result ${visible ? 'visible' : 'hidden'}`}>
                 <div className='exit'>

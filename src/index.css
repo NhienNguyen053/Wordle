@@ -58,7 +58,18 @@ button {
 }
 
 .container2 {
-    width: 500px;
+    width: 95%;
+    max-width: 500px;
+    margin: auto;
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+    cursor: pointer;
+}
+
+.container3 {
+    width: 90%;
+    max-width: 456px;
     margin: auto;
     display: flex;
     gap: 6px;
@@ -153,6 +164,7 @@ button {
   padding: 25px;
   border-radius: 10px;
   box-sizing: border-box;
+  max-width: 100%;
 }
 
 .exit {
@@ -340,4 +352,8 @@ button {
     background: var(---green);
     border-color: var(---green);
   }
+}
+
+@media screen and (max-width: 565px) {
+
 }

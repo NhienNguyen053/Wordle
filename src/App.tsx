@@ -238,12 +238,11 @@ function App() {
                     ))}
                 </div>
             )}
-            <div>
+            <div style={{ width: '100%' }}>
                 {keyboardLayout.map((row, rowIndex) => (
                     <div
-                        className="container2"
+                        className={rowIndex === 1 ? 'container3' : 'container2' }
                         key={rowIndex}
-                        style={{ width: rowIndex === 1 ? '456px' : '' }}
                     >
                         {row.map((key) => (
                             <div
