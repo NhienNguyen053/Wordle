@@ -2,85 +2,249 @@ import { useState, useEffect } from 'react';
 import './App.css';
 import WordInput from './components/WordInput';
 import Modal from './components/Modal';
+import Result from './components/Result';
+import { encryptData, decryptData, getRandomWord } from './utils';
 
 function App() {
-    const [words, setWords] = useState(['', '', '', '', '', '']);
+    const [words, setWords] = useState(Array(6).fill(''));
     const [activeWordIndex, setActiveWordIndex] = useState(0);
     const [key, setKey] = useState('');
     const [isVisible, setIsVisible] = useState(false);
-    const [text, setText] = useState('');
+    const [isDone, setIsDone] = useState(false);
+    const [modalText, setModalText] = useState('');
     const [shakeIndex, setShakeIndex] = useState(-1);
-    const keyboardLayout = [
-        ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
-        ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
-        ['ENTER', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'BACKSPACE'],
-    ];
+    const [correctWord, setCorrectWord] = useState<string[]>([]);
+    const [usedWords, setUsedWords] = useState<string[]>([]);
+    const [isAnimating, setIsAnimating] = useState(false);
+    const [statistics, setStatistics] = useState<Object>();
+    const [reset, setReset] = useState(false);
+    const [keyboardLayout, setKeyboardLayout] = useState([
+        [
+            { letter: 'Q', color: '#818384' },
+            { letter: 'W', color: '#818384' },
+            { letter: 'E', color: '#818384' },
+            { letter: 'R', color: '#818384' },
+            { letter: 'T', color: '#818384' },
+            { letter: 'Y', color: '#818384' },
+            { letter: 'U', color: '#818384' },
+            { letter: 'I', color: '#818384' },
+            { letter: 'O', color: '#818384' },
+            { letter: 'P', color: '#818384' },
+        ],
+        [
+            { letter: 'A', color: '#818384' },
+            { letter: 'S', color: '#818384' },
+            { letter: 'D', color: '#818384' },
+            { letter: 'F', color: '#818384' },
+            { letter: 'G', color: '#818384' },
+            { letter: 'H', color: '#818384' },
+            { letter: 'J', color: '#818384' },
+            { letter: 'K', color: '#818384' },
+            { letter: 'L', color: '#818384' },
+        ],
+        [
+            { letter: 'ENTER', color: '#818384' },
+            { letter: 'Z', color: '#818384' },
+            { letter: 'X', color: '#818384' },
+            { letter: 'C', color: '#818384' },
+            { letter: 'V', color: '#818384' },
+            { letter: 'B', color: '#818384' },
+            { letter: 'N', color: '#818384' },
+            { letter: 'M', color: '#818384' },
+            { letter: 'BACKSPACE', color: '#818384' },
+        ],
+    ]);
+    
 
-    const setVisible = (value) => {
+    const showModal = (message: string) => {
+        setModalText(message);
         setIsVisible(true);
-        setText(value);
-        setTimeout(() => {
-            setIsVisible(false);
-        }, 1000);
+        setTimeout(() => setIsVisible(false), 1000);
     };
 
-    const handleKeyDown = (event) => {
-        setKey(event.key);
+    const setShake = (index: number) => {
+        setShakeIndex(index);
+        setTimeout(() => setShakeIndex(-1), 1000);
     };
 
-    const keyboardClick = (key) => {
-        setKey(key);
-    }
-
-    useEffect(() => {
-        window.addEventListener('keydown', handleKeyDown);
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
+    const updateStatistics = (win: boolean) => {
+        const savedData = localStorage.getItem('gameData');
+        const gameData = savedData ? JSON.parse(savedData) : null;
+        const totalWins = gameData?.wins.reduce((sum: any, win: any) => sum + win, 0) || 0;
+        const newStatistics = {
+            gamesPlayed: (gameData?.gamesPlayed || 0) + 1,
+            winRate: Math.round(((totalWins + (win ? 1 : 0)) / ((gameData?.gamesPlayed || 0) + 1)) * 100),
+            streak: win ? (gameData?.streak || 0) + 1 : 0,
+            bestStreak: Math.max(gameData?.bestStreak || 0, win ? (gameData?.streak || 0) + 1 : 0),
+            guesses: [...words],
+            wins: win ? (gameData?.wins[activeWordIndex] || 0) + 1 : gameData?.wins || [],
+            isDone: true,
+            word: encryptData(correctWord.join('')),
         };
-    }, [activeWordIndex]);
+        localStorage.setItem('gameData', JSON.stringify(newStatistics));
+        setStatistics(newStatistics);
+    };
 
-    const updateWord = (value, index) => {
-        if (activeWordIndex < words.length - 1) {
-            setActiveWordIndex((prevIndex) => prevIndex + 1);
-        }
+    const updateWord = (value: string, index: number, status: string[]) => {
+        setIsAnimating(true);
         const newWords = [...words];
         newWords[index] = value;
         setWords(newWords);
+
+        const updatedLayout = [...keyboardLayout];
+        for (let i = 0; i < value.length; i++) {
+            const letter = value[i];
+            for (const row of updatedLayout) {
+                for (const key of row) {
+                    if (key.letter === letter) {
+                        if (status[i] === 'flip1') {
+                            key.color = '#3a3a3c';
+                        } else if (status[i] === 'flip2') {
+                            key.color = '#b59f3b';
+                        } else if (status[i] === 'flip3') {
+                            key.color = '#538d4e';
+                        }
+                    }
+                }
+            }
+        }
+        setKeyboardLayout(updatedLayout);
+
+        if (value === correctWord.join('')) {
+            showModal('You won!');
+            updateStatistics(true);
+            setTimeout(() => { setIsDone(true) }, 2000);
+        } else if (activeWordIndex < words.length - 1) {
+            setActiveWordIndex((prev) => prev + 1);
+        } else {
+            showModal(correctWord.join(''));
+            updateStatistics(false);
+            setTimeout(() => { setIsDone(true) }, 2000);
+        }
+
+        setTimeout(() => setIsAnimating(false), 0);
     };
 
-    const setShake = (value) => {
-        setShakeIndex(value);
-        setTimeout(() => {
-            setShakeIndex(-1);
-        }, 1000);
-    }
+    const playAgain = () => {
+        const newWord = getRandomWord(usedWords);
+        const savedData = localStorage.getItem('gameData');
+        setUsedWords((prev) => [...prev, newWord.join('')]);
+        setCorrectWord(newWord);
+        setWords(Array(6).fill(''));
+        setActiveWordIndex(0);
+        setKey('');
+        setReset(true);
+        setTimeout(() => { setReset(false) }, 2000);
+        setIsDone(false);
+        if (savedData) {
+            const gameData = JSON.parse(savedData);
+            gameData.isDone = false;
+            gameData.guesses = ['', '', '', '', '', ''];
+            gameData.word = encryptData(newWord.join(''));
+            localStorage.setItem('gameData', JSON.stringify(gameData));
+        } else {
+            const defaultData = {
+                gamesPlayed: 0,
+                winRate: 0,
+                streak: 0,
+                bestStreak: 0,
+                guesses: ['', '', '', '', '', ''],
+                wins: [0, 0, 0, 0, 0, 0],
+                isDone: false,
+                word: encryptData(newWord.join('')),
+            };
+            localStorage.setItem('gameData', JSON.stringify(defaultData));
+        }
+    };
+
+    const initializeGame = () => {
+        const savedData = localStorage.getItem('gameData');
+        if (savedData) {
+            const gameData = JSON.parse(savedData);
+            const word = decryptData(gameData.word);
+            setCorrectWord(word.split(''));
+            setWords(gameData.guesses || Array(6).fill(''));
+            setIsDone(gameData.isDone);
+            setStatistics(gameData);
+        } else {
+            const newWord = getRandomWord(usedWords);
+            setUsedWords((prev) => [...prev, newWord.join('')]);
+            setCorrectWord(newWord);
+            localStorage.setItem(
+                'gameData',
+                JSON.stringify({
+                    gamesPlayed: 0,
+                    winRate: 0,
+                    streak: 0,
+                    bestStreak: 0,
+                    guesses: Array(6).fill(''),
+                    wins: Array(6).fill(0),
+                    isDone: false,
+                    word: encryptData(newWord.join('')),
+                })
+            );
+        }
+    };
+
+    useEffect(() => {
+        initializeGame();
+    }, []);
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => setKey(e.key);
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
 
     return (
         <>
-            <Modal isVisible={isVisible} text={text}/>
-            <div style={{ marginBottom: '15px' }}>
-                {words.map((word, index) => (
-                    <div className={`container ${shakeIndex === index ? 'shake' : ''} `} key={index}>
-                        <WordInput 
-                            index={activeWordIndex}
-                            inputLetter={activeWordIndex === index ? key : ''} 
-                            setInputLetter={(value) => setKey(value)}
-                            setDone={(value) => updateWord(value, index)}
-                            setModalText={setVisible}
-                            setShake={(value) => setShake(value)}
-                        />
-                    </div>
-                ))}
-            </div>
+            <Modal isVisible={isVisible} text={modalText} />
+            <Result isVisible={isDone} gameData={statistics} playAgain={playAgain} />
+            {correctWord[0] && (
+                <div style={{ marginBottom: '15px' }}>
+                    {words.map((word, index) => (
+                        <div
+                            className={`container ${shakeIndex === index ? 'shake' : ''}`}
+                            key={index}
+                        >
+                            <WordInput
+                                word={word}
+                                index={activeWordIndex}
+                                inputLetter={activeWordIndex === index ? key : ''}
+                                setInputLetter={setKey}
+                                setDone={(value: string, status: string[]) => updateWord(value, index, status)}
+                                setModalText={showModal}
+                                setShake={setShake}
+                                correctWord={correctWord}
+                                isAnimating={isAnimating}
+                                reset={reset}
+                            />
+                        </div>
+                    ))}
+                </div>
+            )}
             <div>
                 {keyboardLayout.map((row, rowIndex) => (
-                    <div className="container2" key={rowIndex} style={{ width: rowIndex === 1 ? '456px' : '' }}>
+                    <div
+                        className="container2"
+                        key={rowIndex}
+                        style={{ width: rowIndex === 1 ? '456px' : '' }}
+                    >
                         {row.map((key) => (
-                            <div key={key} className='button' style={{ fontSize: key === 'ENTER' ? '0.75rem' : '', width: key === 'ENTER' || key === 'BACKSPACE' ? '15%' : '' }} onClick={() => keyboardClick(key)}>
-                                {key === 'BACKSPACE' ? (
+                            <div
+                                key={key.letter}
+                                className="button"
+                                style={{
+                                    fontSize: key.letter === 'ENTER' ? '0.75rem' : '',
+                                    width: ['ENTER', 'BACKSPACE'].includes(key.letter) ? '15%' : '',
+                                    background: key.color
+                                }}
+                                onClick={() => setKey(key.letter)}
+                            >
+                                {key.letter === 'BACKSPACE' ? (
                                     <i className="fa-solid fa-delete-left"></i>
                                 ) : (
-                                    key
+                                    key.letter
                                 )}
                             </div>
                         ))}

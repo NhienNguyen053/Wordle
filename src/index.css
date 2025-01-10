@@ -123,6 +123,103 @@ button {
   opacity: 0;
 }
 
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: none;
+}
+
+.overlay.visible {
+  display: block;
+}
+
+.result {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 395px;  
+  height: 535px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s, transform 0.5s;
+  background-color: #121214;
+  z-index: 1000;
+  padding: 25px;
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+.exit {
+  width: 100%;
+  display: flex;
+  justify-content: end;
+}
+
+.fa-xmark {
+  cursor: pointer;
+  color: white;
+  font-size: 20px;
+}
+
+.result.visible {
+  opacity: 1;
+  transform: translate(-50%, -50%) translateY(0); 
+}
+
+.result.hidden {
+  opacity: 0;
+  transform: translate(-50%, -50%) translateY(20px);
+}
+
+.title {
+  font-family: "Roboto", sans-serif;
+  font-size: 40px;
+  color: white;
+}
+
+.chart-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 20px auto;
+}
+
+.chart-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.chart-label {
+  width: 30px;
+  text-align: right;
+  margin-right: 10px;
+  font-size: 14px;
+  color: white;
+  font-weight: bold;
+}
+
+.chart-bar {
+  position: relative;
+  height: 30px;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  color: white;
+  font-weight: bold;
+  padding-right: 10px;
+}
+
+.chart-value {
+  position: relative;
+}
+
 .shake {
   animation: shake 0.3s ease-in-out;
 }
@@ -133,7 +230,6 @@ button {
 
 .button {
     width: 10%;
-    background: #818384;
     color: white;
     border-radius: 4px;
     font-size: 1.25em;
@@ -179,13 +275,24 @@ button {
 
 @keyframes flip1 {
   0% {
-      transform: rotateX(0);
+    transform: rotateX(0);
+    background: initial;
+    border-color: #818384;
+  }
+  49.9% {
+    transform: rotateX(89.9deg);
+    background: initial;
+    border-color: #818384;
   }
   50% {
-      transform: rotateX(90deg);
+    transform: rotateX(90deg);
+    background: var(---gray);
+    border-color: var(---gray);
   }
   100% {
-      transform: rotateX(0);
+    transform: rotateX(0);
+    background: var(---gray);
+    border-color: var(---gray);
   }
 }
 
@@ -214,12 +321,23 @@ button {
 
 @keyframes flip3 {
   0% {
-      transform: rotateX(0);
+    transform: rotateX(0);
+    background: initial;
+    border-color: #818384;
+  }
+  49.9% {
+    transform: rotateX(89.9deg);
+    background: initial;
+    border-color: #818384;
   }
   50% {
-      transform: rotateX(90deg);
+    transform: rotateX(90deg);
+    background: var(---green);
+    border-color: var(---green);
   }
   100% {
-      transform: rotateX(0);
+    transform: rotateX(0);
+    background: var(---green);
+    border-color: var(---green);
   }
 }

@@ -1,14 +1,47 @@
-import { useState, useEffect } from 'react';
-import Modal from './Modal';
+import { useState, useEffect, useRef } from 'react';
+import wordList from '../../wordsList.json';
 
-function WordInput({ index, setDone, inputLetter, setInputLetter, setModalText, setShake }) {
+function WordInput({ word, index, setDone, inputLetter, setInputLetter, setModalText, setShake, correctWord, isAnimating, reset }) {
     const [letters, setLetters] = useState(['', '', '', '', '']);
     const [lettersStatus, setLettersStatus] = useState(['', '', '', '', '']);
-    const [correctWord, setCorrectWord] = useState(['D', 'R', 'A', 'K', 'E']);
     const [animate, setAnimate] = useState(false);
+    const wordSetRef = useRef(false);
+
+    useEffect(() => {
+        if (!wordSetRef.current) {
+            if (word) {
+                const splittedWord = word.split('');
+                setLetters(splittedWord);
+                const newStatus = splittedWord.map((letter, idx) => {
+                    if (letter === correctWord[idx]) {
+                        return 'flip3';
+                    }
+                    if (correctWord.includes(letter)) {
+                        return 'flip2';
+                    }
+                    return 'flip1';
+                });
+                setLettersStatus(newStatus);
+                setAnimate(true);
+                setDone(letters.join(''));
+            }
+            wordSetRef.current = true;
+        }
+    }, [correctWord]);
+
+    useEffect(() => {
+        if (reset) {
+            setLetters(['', '', '', '', '']);
+            setLettersStatus(['', '', '', '', '']);
+        }
+    }, [reset])
     
     useEffect(() => {
         const wordle = async() => {
+            if (isAnimating) {
+                return;
+            }
+
             if (inputLetter) {
                 if (inputLetter && /[a-zA-Z]/.test(inputLetter) && inputLetter.length === 1) {
                     setLetters((prevLetters) => {
@@ -35,18 +68,25 @@ function WordInput({ index, setDone, inputLetter, setInputLetter, setModalText, 
                         setModalText("Not enough letters");
                         setShake(index);
                     } else {
-                        const newStatus = letters.map((letter, idx) => {
-                            if (letter === correctWord[idx]) {
-                                return '#538d4e';
-                            }
-                            if (correctWord.includes(letter)) {
-                                return '#b59f3b';
-                            }
-                            return '#3a3a3c';
-                        });
-                        setLettersStatus(newStatus);
-                        setAnimate(true);
-                        setDone(letters.join(''));
+                        const words = Object.keys(wordList);
+                        if (!words.includes(letters.join('').toLowerCase())) {
+                            setModalText("Not in word list");
+                            setShake(index);
+                        } else {
+                            const newStatus = letters.map((letter, idx) => {
+                                if (letter === correctWord[idx]) {
+                                    return 'flip3';
+                                }
+                                if (correctWord.includes(letter)) {
+                                    return 'flip2';
+                                }
+                                return 'flip1';
+                            });
+                            setLettersStatus(newStatus);
+                            setAnimate(true);
+                            setDone(letters.join(''), newStatus);
+                            saveLocal();
+                        }
                     }
                 }
                 setInputLetter(null);
@@ -55,10 +95,21 @@ function WordInput({ index, setDone, inputLetter, setInputLetter, setModalText, 
         wordle();
     }, [inputLetter]);
 
+    const saveLocal = () => {
+        const currentGuess = letters.join('');
+        let data = localStorage.getItem('gameData');
+        if (data) {
+            const parsedData = JSON.parse(data);
+            parsedData.guesses[index] = currentGuess;
+            localStorage.setItem('gameData', JSON.stringify(parsedData));
+        }
+    };
+    
+
     return (
         <>
             {letters.map((letter, index) => (
-                <div key={index} className={`box ${letter ? 'active' : ''} ${animate ? 'flip2' : ''}`} style={{ animationDelay: `${index * 0.3}s` }}>{letter}</div>
+                <div key={index} className={`box ${letter ? 'active' : ''} ${animate ? lettersStatus[index] : ''}`} style={{ animationDelay: `${index * 0.3}s` }}>{letter}</div>
             ))}
         </>
     );
