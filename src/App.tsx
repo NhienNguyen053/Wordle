@@ -129,7 +129,7 @@ function App() {
             setTimeout(() => { setIsDone(true) }, 2000);
         }
 
-        setTimeout(() => setIsAnimating(false), 0);
+        setTimeout(() => setIsAnimating(false), 2000);
     };
 
     const playAgain = () => {
