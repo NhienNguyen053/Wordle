@@ -17,6 +17,5 @@ export const getRandomWord = (usedWords: string[]): string[] => {
     const selectedWord = remainingWords.length
         ? remainingWords[Math.floor(Math.random() * remainingWords.length)]
         : wordsArray[Math.floor(Math.random() * wordsArray.length)];
-    console.log(selectedWord)
     return selectedWord.toUpperCase().split('');
 };

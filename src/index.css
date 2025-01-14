@@ -31,7 +31,6 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background: #121213;
-  -webkit-transform: translate3d(0px, 0px, 0px);
   z-index: 1;
 }
 
@@ -90,6 +89,12 @@ button {
     font-weight: 900;
     font-size: 30px;
     color: white;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    position: relative;
+    z-index: 1;
 }
 
 .box.flip1 {

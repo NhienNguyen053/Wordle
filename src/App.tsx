@@ -129,7 +129,7 @@ function App() {
             setTimeout(() => { setIsDone(true) }, 2000);
         }
 
-        setTimeout(() => setIsAnimating(false), 2000);
+        setTimeout(() => setIsAnimating(false), 0);
     };
 
     const playAgain = () => {
@@ -141,7 +141,6 @@ function App() {
         setActiveWordIndex(0);
         setKey('');
         setReset(true);
-        setTimeout(() => { setReset(false) }, 2000);
         setIsDone(false);
         setKeyboardLayout((prevLayout) =>
             prevLayout.map(row =>
@@ -201,6 +200,10 @@ function App() {
         }
     };
 
+    const resetFalse = () => {
+        setReset(false)
+    }
+
     useEffect(() => {
         initializeGame();
     }, []);
@@ -233,6 +236,7 @@ function App() {
                                 correctWord={correctWord}
                                 isAnimating={isAnimating}
                                 reset={reset}
+                                setReset={resetFalse}
                             />
                         </div>
                     ))}
