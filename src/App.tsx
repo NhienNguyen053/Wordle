@@ -104,12 +104,14 @@ function App() {
             for (const row of updatedLayout) {
                 for (const key of row) {
                     if (key.letter === letter) {
-                        if (status[i] === 'flip1') {
-                            key.color = '#3a3a3c';
-                        } else if (status[i] === 'flip2') {
-                            key.color = '#b59f3b';
-                        } else if (status[i] === 'flip3') {
-                            key.color = '#538d4e';
+                        if (key.color !== '#538d4e') {
+                            if (status[i] === 'flip1') {
+                                key.color = '#3a3a3c';
+                            } else if (status[i] === 'flip2') {
+                                key.color = '#b59f3b';
+                            } else if (status[i] === 'flip3') {
+                                key.color = '#538d4e';
+                            }
                         }
                     }
                 }
