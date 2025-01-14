@@ -31,6 +31,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background: #121213;
+  -webkit-transform: translate3d(0px, 0px, 0px);
 }
 
 h1 {
