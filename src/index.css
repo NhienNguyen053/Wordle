@@ -32,6 +32,7 @@ body {
   min-height: 100vh;
   background: #121213;
   -webkit-transform: translate3d(0px, 0px, 0px);
+  z-index: 1;
 }
 
 h1 {
@@ -56,6 +57,7 @@ button {
     gap: 5px;
     margin: 0 auto 5px auto;
     width: fit-content;
+    z-index: 2;
 }
 
 .container2 {
