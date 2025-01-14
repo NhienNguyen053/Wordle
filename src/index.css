@@ -93,6 +93,7 @@ button {
     color: white;
     transform: translateZ(0);
     backface-visibility: hidden;
+    z-index: 1;
 }
 
 .box.flip1 {
