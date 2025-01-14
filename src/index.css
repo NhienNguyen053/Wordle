@@ -94,7 +94,8 @@ button {
   transform: translateZ(0);
   backface-visibility: hidden;
   z-index: 1;
-  transform-style: preserve-3d
+  transform-style: preserve-3d;
+  position: relative;
 }
 
 .box.flip1 {
