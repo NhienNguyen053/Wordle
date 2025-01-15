@@ -96,6 +96,7 @@ button {
   z-index: 1;
   transform-style: preserve-3d;
   position: relative;
+  -webkit-transform: translateZ(0);
 }
 
 .box.flip1 {
