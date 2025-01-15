@@ -100,16 +100,19 @@ button {
 
 .box.flip1 {
   animation: flip1 0.8s ease forwards;
+  transform-style: preserve-3d;
   z-index: 1;
 }
 
 .box.flip2 {
   animation: flip2 0.8s ease forwards;
+  transform-style: preserve-3d;
   z-index: 1;
 }
 
 .box.flip3 {
   animation: flip3 0.8s ease forwards;
+  transform-style: preserve-3d;
   z-index: 1;
 }
 

@@ -45,7 +45,7 @@ function Result({ isVisible, gameData, playAgain }) {
                     <Chart data={gameData.wins}/>
                     </>
                 )}
-                <button style={{ background: '#4b9147', borderRadius: '5px', color: 'white' }} onClick={playAgain}>PLAY AGAIN</button>
+                <div style={{ background: '#4b9147', borderRadius: '5px', color: 'white', cursor: 'pointer', width: '50%', padding: '5px', margin: 'auto' }} onClick={playAgain}>PLAY AGAIN</div>
             </div>
         </div>
     );

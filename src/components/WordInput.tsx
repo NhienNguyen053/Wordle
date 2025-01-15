@@ -33,6 +33,7 @@ function WordInput({ word, index, setDone, inputLetter, setInputLetter, setModal
         if (reset) {
             setLetters(['', '', '', '', '']);
             setLettersStatus(['', '', '', '', '']);
+            setReset();
         }
     }, [reset])
     
