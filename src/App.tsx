@@ -239,6 +239,7 @@ function App() {
                                 isAnimating={isAnimating}
                                 reset={reset}
                                 setReset={resetFalse}
+                                isDone={isDone}
                             />
                         </div>
                     ))}

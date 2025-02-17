@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import wordList from '../../wordsList.json';
 
-function WordInput({ word, index, setDone, inputLetter, setInputLetter, setModalText, setShake, correctWord, isAnimating, reset, setReset }) {
+function WordInput({ word, index, setDone, inputLetter, setInputLetter, setModalText, setShake, correctWord, isAnimating, reset, setReset, isDone }) {
     const [letters, setLetters] = useState(['', '', '', '', '']);
     const [lettersStatus, setLettersStatus] = useState(['', '', '', '', '']);
     const [animate, setAnimate] = useState(false);
@@ -22,13 +22,16 @@ function WordInput({ word, index, setDone, inputLetter, setInputLetter, setModal
                     return 'flip1';
                 });
                 setLettersStatus(newStatus);
-                setAnimate(true);
                 setDone(word, newStatus);
+    
+                if (!isDone) {
+                    setAnimate(true);
+                }
             }
             wordSetRef.current = true;
         }
-    }, [correctWord]);
-
+    }, [correctWord, isDone]);
+    
     useEffect(() => {
         if (reset) {
             setLetters(['', '', '', '', '']);
